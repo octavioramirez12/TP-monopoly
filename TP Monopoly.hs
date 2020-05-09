@@ -56,7 +56,10 @@ esPropiedadBarata :: Propiedad->Bool
 esPropiedadBarata = ((<150).snd)
 
 inicializarParticipante :: String->Tactica->Accion->Participante
-inicializarParticipante nombre tactica accionInicial= Participante nombre 500.0 tactica [] ([pasarPorElBanco] ++ [accionInicial])
+inicializarParticipante unNombre unaTactica accionInicial= Participante unNombre 500.0 unaTactica [] ([pasarPorElBanco] ++ [accionInicial])
 
+carolina :: Participante
 carolina = inicializarParticipante "Carolina" accionista pagarAAccionistas
+
+manuel :: Participante
 manuel = inicializarParticipante "Manuel" oferenteSingular enojarse
