@@ -49,6 +49,10 @@ cobrarAlquileres unParticipante = unParticipante {dinero = dinero unParticipante
 calcularGanancias :: [Propiedad] -> Float
 calcularGanancias unasPropiedades = sum (map precioAlquiler unasPropiedades)
 
+hacerBerrinchePor :: Propiedad -> Accion
+hacerBerrinchePor unaPropiedad unParticipante | notElem unaPropiedad (propiedadesCompradas unParticipante) = ((modificarDinero (+10)).gritar) unParticipante
+                                              | otherwise = unParticipante
+
 modificarDinero :: (Float -> Float) -> Participante -> Participante
 modificarDinero funcion unParticipante = unParticipante {dinero = funcion (dinero unParticipante)}
 
@@ -67,3 +71,13 @@ carolina = inicializarParticipante "Carolina" accionista pagarAAccionistas
 
 manuel :: Participante
 manuel = inicializarParticipante "Manuel" oferenteSingular enojarse
+
+ultimaRonda :: Participante -> Accion
+ultimaRonda unParticipante = foldr1 (.) (acciones unParticipante)
+
+dineroFinal :: Participante -> Float
+dineroFinal unParticipante= (dinero.(ultimaRonda unParticipante)) unParticipante
+
+juegoFinal :: Participante -> Participante -> Participante
+juegoFinal participante1 participante2 | (dineroFinal participante1) > (dineroFinal participante2) = participante1
+                                       | otherwise = participante2
