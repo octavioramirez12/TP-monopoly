@@ -38,8 +38,9 @@ enojarse :: Accion
 enojarse unParticipante = unParticipante {dinero = dinero unParticipante + 50, acciones = (acciones unParticipante) ++ [gritar]}
 
 subastar :: Propiedad->Participante->Participante
-subastar unaPropiedad unParticipante| tactica unParticipante == "accionista" || tactica unParticipante == "oferente singular" = unParticipante {dinero = dinero unParticipante + (snd unaPropiedad), propiedadesCompradas = (propiedadesCompradas unParticipante) ++ [unaPropiedad]}
-                                    | otherwise                                                                               = unParticipante
+subastar propiedadSubastada (Participante unNombre unDinero accionista unasPropiedades unasAcciones) = (Participante unNombre (unDinero - (snd propiedadSubastada)) accionista (unasPropiedades ++ [propiedadSubastada]) unasAcciones)
+subastar propiedadSubastada (Participante unNombre unDinero oferenteSingular unasPropiedades unasAcciones) = (Participante unNombre (unDinero - (snd propiedadSubastada)) oferenteSingular (unasPropiedades ++ [propiedadSubastada]) unasAcciones)
+subastar propiedadSubastada (Participante unNombre unDinero unaTactica unasPropiedades unasAcciones) = (Participante unNombre unDinero unaTactica unasPropiedades unasAcciones)
 
 cobrarAlquileres :: Accion
 cobrarAlquileres unParticipante = unParticipante {dinero = dinero unParticipante + calcularGanancias (propiedadesCompradas unParticipante)}
