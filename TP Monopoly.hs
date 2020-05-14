@@ -12,8 +12,8 @@ type Propiedad = (String, Float)
 type Accion = (Participante->Participante)
 type Tactica = String
 
-actualizarTactica :: Tactica -> Participante -> Participante
-actualizarTactica nuevaTactica unParticipante = unParticipante {tactica = nuevaTactica}
+modificarTactica :: Tactica -> Participante -> Participante
+modificarTactica nuevaTactica unParticipante = unParticipante {tactica = nuevaTactica}
 
 accionista :: Tactica
 accionista = "accionista"
@@ -28,14 +28,14 @@ gritar :: Accion
 gritar unParticipante = unParticipante {nombre = (nombre unParticipante) ++ "AHHHH"}
 
 pasarPorElBanco :: Accion
-pasarPorElBanco unParticipante = (actualizarTactica compradorCompulsivo) unParticipante {dinero = dinero unParticipante + 40}
+pasarPorElBanco unParticipante = ((modificarTactica compradorCompulsivo).(modificarDinero (+40))) unParticipante
 
 pagarAAccionistas :: Accion
-pagarAAccionistas unParticipante | ((tactica unParticipante) == accionista) = unParticipante {dinero = dinero unParticipante + 200.0}
-                                 | otherwise                            = unParticipante {dinero = dinero unParticipante - 100}
+pagarAAccionistas unParticipante | ((tactica unParticipante) == accionista) = (modificarDinero (+200)) unParticipante
+                                 | otherwise                            = (modificarDinero (subtract 100)) unParticipante
 
 enojarse :: Accion
-enojarse unParticipante = unParticipante {dinero = dinero unParticipante + 50, acciones = (acciones unParticipante) ++ [gritar]}
+enojarse unParticipante = modificarDinero (+50) unParticipante {acciones = (acciones unParticipante) ++ [gritar]}
 
 subastar :: Propiedad->Participante->Participante
 subastar propiedadSubastada (Participante unNombre unDinero accionista unasPropiedades unasAcciones) = (Participante unNombre (unDinero - (snd propiedadSubastada)) accionista (unasPropiedades ++ [propiedadSubastada]) unasAcciones)
@@ -48,6 +48,9 @@ cobrarAlquileres unParticipante = unParticipante {dinero = dinero unParticipante
 
 calcularGanancias :: [Propiedad] -> Float
 calcularGanancias unasPropiedades = sum (map precioAlquiler unasPropiedades)
+
+modificarDinero :: (Float -> Float) -> Participante -> Participante
+modificarDinero funcion unParticipante = unParticipante {dinero = funcion (dinero unParticipante)}
 
 precioAlquiler :: Propiedad -> Float
 precioAlquiler unaPropiedad | esPropiedadBarata unaPropiedad = 10
