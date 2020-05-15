@@ -50,8 +50,12 @@ calcularGanancias :: [Propiedad] -> Float
 calcularGanancias unasPropiedades = sum (map precioAlquiler unasPropiedades)
 
 hacerBerrinchePor :: Propiedad -> Accion
-hacerBerrinchePor unaPropiedad unParticipante | notElem unaPropiedad (propiedadesCompradas unParticipante) = ((modificarDinero (+10)).gritar) unParticipante
-                                              | otherwise = unParticipante
+hacerBerrinchePor unaPropiedad unParticipante | (snd unaPropiedad) > dinero unParticipante = ((hacerBerrinchePor unaPropiedad).(modificarDinero (+10)).gritar) unParticipante
+                                              | otherwise = comprarUnaPropiedad unaPropiedad unParticipante
+
+comprarUnaPropiedad :: Propiedad -> Participante -> Participante
+comprarUnaPropiedad unaPropiedad unParticipante | (snd unaPropiedad <= dinero unParticipante) = modificarDinero (+(-snd unaPropiedad)) unParticipante {propiedadesCompradas = (propiedadesCompradas unParticipante) ++ [unaPropiedad]}
+                                               | otherwise                         = unParticipante
 
 modificarDinero :: (Float -> Float) -> Participante -> Participante
 modificarDinero funcion unParticipante = unParticipante {dinero = funcion (dinero unParticipante)}
@@ -74,6 +78,12 @@ manuel = inicializarParticipante "Manuel" oferenteSingular enojarse
 
 ultimaRonda :: Participante -> Accion
 ultimaRonda unParticipante = foldr1 (.) (acciones unParticipante)
+
+ejecutarUnaAccion :: Participante -> Participante
+ejecutarUnaAccion unParticipante = ((head.acciones) unParticipante) unParticipante {acciones = ((tail.acciones) unParticipante)}
+
+agregarUnaAccion :: Accion -> Accion
+agregarUnaAccion unaAccion unParticipante = unParticipante {acciones = (acciones unParticipante) ++ [unaAccion]}
 
 dineroFinal :: Participante -> Float
 dineroFinal unParticipante= (dinero.(ultimaRonda unParticipante)) unParticipante
